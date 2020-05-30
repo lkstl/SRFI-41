@@ -1,14 +1,12 @@
-;;;; Implementation of the (scheme lazy) library specified in r7rs
-;;;; This differs from the sample implementation given there by using a new record type for promises.
-;;;; (Also, it implements make-promise correctly.)
-
 (define-syntax delay-force
   (syntax-rules ()
-    ((delay-force expression) (%make-promise #f (lambda () expression)))))
+    ((delay-force expression)
+     (%make-promise #f (lambda () expression)))))
 
 (define-syntax delay
   (syntax-rules ()
-    ((delay expression) (delay-force (%make-promise #t expression)))))
+    ((delay expression)
+     (delay-force (%make-promise #t expression)))))
 
 (define-record-type <promise>
   (%make-promise done? proc)
@@ -30,4 +28,7 @@
     (set-promise-value! old (promise-value new))
     (set! new old))) ; for garbage collection?
 
-(define (make-promise object) (if (promise? object) object (delay object)))
+;; The sample implementation of 'make-promise' in the r7rs
+;; is incorrect according to its own specification.
+(define (make-promise object)
+  (if (promise? object) object (delay object)))
